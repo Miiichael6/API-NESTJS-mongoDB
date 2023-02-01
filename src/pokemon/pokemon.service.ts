@@ -9,13 +9,17 @@ import { Pokemon } from "./entities/pokemon.entity";
 import { CreatePokemonDto } from "./dto/create-pokemon.dto";
 import { UpdatePokemonDto } from "./dto/update-pokemon.dto";
 import { InjectModel } from "@nestjs/mongoose";
+import { PaginationDto } from "../common/dto/pagination.dto";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class PokemonService {
   // inyectando la tabla
   constructor(
     @InjectModel(Pokemon.name)
-    private readonly pokemonModel: Model<Pokemon>
+    private readonly pokemonModel: Model<Pokemon>,
+
+    private readonly configService: ConfigService
   ) {}
 
   async create(createPokemonDto: CreatePokemonDto) {
@@ -30,9 +34,18 @@ export class PokemonService {
     }
   }
 
-  async findAll() {
+  async findAll(paginationDto: PaginationDto) {
     try {
-      const allPokemons = await this.pokemonModel.find();
+      const { limit = 0, offset = 0 } = paginationDto;
+
+      const allPokemons = await this.pokemonModel
+        .find()
+        .limit(limit)
+        .skip(offset)
+        .sort({
+          no: 1,
+        })
+        .select("-__v");
 
       return allPokemons;
     } catch (error: any) {
@@ -91,7 +104,7 @@ export class PokemonService {
 
     const { deletedCount } = await this.pokemonModel.deleteOne({ _id });
 
-    if (deletedCount === 0){
+    if (deletedCount === 0) {
       throw new BadRequestException(`Pokemon con id ${_id} no existe`);
     }
 

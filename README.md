@@ -7,6 +7,11 @@
 1. clonar repo
 2. Ejecutar
 
+5. recargar base de datos con seed de pokemons
+```
+http://localhost:3000/api/v2/seed
+```
+
 ## Installation
 
 ```bash

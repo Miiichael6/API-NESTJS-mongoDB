@@ -3,12 +3,14 @@ import { PokemonService } from "./pokemon.service";
 import { PokemonController } from "./pokemon.controller";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Pokemon, PokemonSchema } from "./entities/pokemon.entity";
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [PokemonController],
   providers: [PokemonService],
   // definiendo Modulos de los Modelos con nombre y esquema
   imports: [
+    ConfigModule,
     MongooseModule.forFeature([
       {
         name: Pokemon.name,
@@ -16,5 +18,7 @@ import { Pokemon, PokemonSchema } from "./entities/pokemon.entity";
       },
     ]),
   ],
+
+  exports: [MongooseModule],
 })
 export class PokemonModule {}
